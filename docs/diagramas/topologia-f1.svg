@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1060" viewBox="0 0 1160 1060" font-family="Helvetica, Arial, sans-serif">
+<rect width="1160" height="1060" fill="#ffffff"/>
+<text x="580" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#111">Topología F1 — cómo acomodar los nodos en GNS3</text>
+<rect x="20" y="40" width="1120" height="130" rx="10" fill="#f4f6fa"/>
+<text x="34" y="62" font-size="13" font-weight="700" fill="#8a93a3" letter-spacing="1">INTERNET</text>
+<rect x="20" y="200" width="1120" height="100" rx="10" fill="#eef3fb"/>
+<text x="34" y="222" font-size="13" font-weight="700" fill="#8a93a3" letter-spacing="1">EDGE</text>
+<rect x="20" y="370" width="1120" height="100" rx="10" fill="#f4f6fa"/>
+<text x="34" y="392" font-size="13" font-weight="700" fill="#8a93a3" letter-spacing="1">CORE</text>
+<rect x="20" y="550" width="1120" height="100" rx="10" fill="#eef3fb"/>
+<text x="34" y="572" font-size="13" font-weight="700" fill="#8a93a3" letter-spacing="1">DISTRIBUCIÓN</text>
+<rect x="20" y="745" width="1120" height="90" rx="10" fill="#f4f6fa"/>
+<text x="34" y="767" font-size="13" font-weight="700" fill="#8a93a3" letter-spacing="1">ACCESO (switches L2)</text>
+<rect x="20" y="905" width="1120" height="90" rx="10" fill="#eef3fb"/>
+<text x="34" y="927" font-size="13" font-weight="700" fill="#8a93a3" letter-spacing="1">HOSTS</text>
+<line x1="400" y1="80" x2="580" y2="240" stroke="#5b6472" stroke-width="3"/>
+<line x1="760" y1="80" x2="580" y2="240" stroke="#5b6472" stroke-width="3"/>
+<line x1="580" y1="240" x2="400" y2="410" stroke="#5b6472" stroke-width="3"/>
+<line x1="580" y1="240" x2="760" y2="410" stroke="#5b6472" stroke-width="3"/>
+<line x1="400" y1="410" x2="760" y2="410" stroke="#5b6472" stroke-width="3"/>
+<line x1="400" y1="410" x2="400" y2="590" stroke="#5b6472" stroke-width="3"/>
+<line x1="400" y1="410" x2="760" y2="590" stroke="#5b6472" stroke-width="3"/>
+<line x1="760" y1="410" x2="400" y2="590" stroke="#5b6472" stroke-width="3"/>
+<line x1="760" y1="410" x2="760" y2="590" stroke="#5b6472" stroke-width="3"/>
+<line x1="400" y1="590" x2="400" y2="780" stroke="#1f6feb" stroke-width="3"/>
+<line x1="760" y1="590" x2="400" y2="780" stroke="#1f6feb" stroke-width="3"/>
+<line x1="400" y1="590" x2="760" y2="780" stroke="#d9730d" stroke-width="3"/>
+<line x1="760" y1="590" x2="760" y2="780" stroke="#d9730d" stroke-width="3"/>
+<line x1="400" y1="940" x2="400" y2="780" stroke="#1f6feb" stroke-width="3"/>
+<line x1="760" y1="940" x2="760" y2="780" stroke="#d9730d" stroke-width="3"/>
+<rect x="312.0" y="53.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="400" y="77" text-anchor="middle" font-size="16" font-weight="700" fill="#111">ISP-1</text>
+<text x="400" y="96" text-anchor="middle" font-size="11" fill="#555">lo 1.1.1.1 · AS 65001</text>
+<rect x="672.0" y="53.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="760" y="77" text-anchor="middle" font-size="16" font-weight="700" fill="#111">ISP-2</text>
+<text x="760" y="96" text-anchor="middle" font-size="11" fill="#555">lo 2.2.2.2 · AS 65002</text>
+<rect x="492.0" y="213.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="580" y="237" text-anchor="middle" font-size="16" font-weight="700" fill="#111">EDGE</text>
+<text x="580" y="256" text-anchor="middle" font-size="11" fill="#555">lo 3.3.3.3 · AS 65000</text>
+<rect x="312.0" y="383.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="400" y="407" text-anchor="middle" font-size="16" font-weight="700" fill="#111">CORE-1</text>
+<text x="400" y="426" text-anchor="middle" font-size="11" fill="#555">lo 4.4.4.4</text>
+<rect x="672.0" y="383.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="760" y="407" text-anchor="middle" font-size="16" font-weight="700" fill="#111">CORE-2</text>
+<text x="760" y="426" text-anchor="middle" font-size="11" fill="#555">lo 5.5.5.5</text>
+<rect x="312.0" y="563.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="400" y="587" text-anchor="middle" font-size="16" font-weight="700" fill="#111">DIST-1</text>
+<text x="400" y="606" text-anchor="middle" font-size="11" fill="#555">lo 6.6.6.6</text>
+<rect x="672.0" y="563.0" width="176" height="54" rx="9" fill="#ffffff" stroke="#1f2937" stroke-width="2.5"/>
+<text x="760" y="587" text-anchor="middle" font-size="16" font-weight="700" fill="#111">DIST-2</text>
+<text x="760" y="606" text-anchor="middle" font-size="11" fill="#555">lo 7.7.7.7</text>
+<rect x="312.0" y="753.0" width="176" height="54" rx="9" fill="#fff7e6" stroke="#b45309" stroke-width="2.5"/>
+<text x="400" y="777" text-anchor="middle" font-size="16" font-weight="700" fill="#111">SW-ACC-USERS</text>
+<text x="400" y="796" text-anchor="middle" font-size="11" fill="#555">192.168.10.0/24</text>
+<rect x="672.0" y="753.0" width="176" height="54" rx="9" fill="#fff7e6" stroke="#b45309" stroke-width="2.5"/>
+<text x="760" y="777" text-anchor="middle" font-size="16" font-weight="700" fill="#111">SW-ACC-SERVERS</text>
+<text x="760" y="796" text-anchor="middle" font-size="11" fill="#555">192.168.20.0/24</text>
+<rect x="312.0" y="913.0" width="176" height="54" rx="9" fill="#eefbf1" stroke="#15803d" stroke-width="2.5"/>
+<text x="400" y="937" text-anchor="middle" font-size="16" font-weight="700" fill="#111">PC-USER</text>
+<text x="400" y="956" text-anchor="middle" font-size="11" fill="#555">192.168.10.100</text>
+<rect x="672.0" y="913.0" width="176" height="54" rx="9" fill="#eefbf1" stroke="#15803d" stroke-width="2.5"/>
+<text x="760" y="937" text-anchor="middle" font-size="16" font-weight="700" fill="#111">SRV</text>
+<text x="760" y="956" text-anchor="middle" font-size="11" fill="#555">192.168.20.100</text>
+<text x="443.1" y="122.3" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="536.9" y="205.7" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="482.0" y="173.0" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">198.51.100.0/30</text>
+<text x="716.9" y="122.3" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="623.1" y="205.7" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e2</text>
+<text x="662.0" y="155.0" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">203.0.113.0/30</text>
+<text x="539.1" y="282.7" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e3</text>
+<text x="440.9" y="375.3" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="481.8" y="320.3" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.0/30</text>
+<text x="620.9" y="282.7" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e4</text>
+<text x="719.1" y="375.3" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="661.8" y="337.7" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.4/30</text>
+<text x="505.0" y="414.0" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e2</text>
+<text x="655.0" y="414.0" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e2</text>
+<text x="580.0" y="426.0" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.8/30  (core-core)</text>
+<text x="400.0" y="458.0" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e3</text>
+<text x="400.0" y="550.0" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="388.0" y="504.0" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.12/30</text>
+<text x="469.2" y="448.6" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e4</text>
+<text x="690.8" y="559.4" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e1</text>
+<text x="524.2" y="489.5" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.16/30</text>
+<text x="690.8" y="448.6" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e3</text>
+<text x="469.2" y="559.4" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e2</text>
+<text x="625.0" y="468.1" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.20/30</text>
+<text x="760.0" y="458.0" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e4</text>
+<text x="760.0" y="550.0" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6472" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e2</text>
+<text x="748.0" y="504.0" text-anchor="middle" font-size="11" font-weight="600" fill="#444" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">10.0.0.24/30</text>
+<text x="400.0" y="638.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1f6feb" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e3</text>
+<text x="400.0" y="740.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1f6feb" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Eth0</text>
+<text x="693.8" y="628.9" text-anchor="middle" font-size="12" font-weight="700" fill="#1f6feb" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e3</text>
+<text x="466.2" y="749.1" text-anchor="middle" font-size="12" font-weight="700" fill="#1f6feb" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Eth1</text>
+<text x="466.2" y="628.9" text-anchor="middle" font-size="12" font-weight="700" fill="#d9730d" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e4</text>
+<text x="693.8" y="749.1" text-anchor="middle" font-size="12" font-weight="700" fill="#d9730d" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Eth0</text>
+<text x="760.0" y="638.0" text-anchor="middle" font-size="12" font-weight="700" fill="#d9730d" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">e4</text>
+<text x="760.0" y="740.0" text-anchor="middle" font-size="12" font-weight="700" fill="#d9730d" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Eth1</text>
+<text x="400.0" y="828.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1f6feb" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Eth2</text>
+<text x="760.0" y="828.0" text-anchor="middle" font-size="12" font-weight="700" fill="#d9730d" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Eth2</text>
+<text x="386.0" y="866.0" text-anchor="end" font-size="11" font-weight="600" fill="#1f6feb" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">LAN USERS · VIP 192.168.10.1 (F2)</text>
+<text x="774.0" y="866.0" text-anchor="start" font-size="11" font-weight="600" fill="#d9730d" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">LAN SERVERS · VIP 192.168.20.1 (F2)</text>
+<line x1="40" y1="1010" x2="80" y2="1010" stroke="#5b6472" stroke-width="3"/>
+<text x="88" y="1014" font-size="12" fill="#333">enlaces P2P /30</text>
+<line x1="220" y1="1010" x2="260" y2="1010" stroke="#1f6feb" stroke-width="3"/>
+<text x="268" y="1014" font-size="12" fill="#333">LAN USERS</text>
+<line x1="360" y1="1010" x2="400" y2="1010" stroke="#d9730d" stroke-width="3"/>
+<text x="408" y="1014" font-size="12" fill="#333">LAN SERVERS</text>
+<text x="520" y="1014" font-size="12" fill="#333">CHR: 1.ª interfaz de la lista = ether1, 2.ª = ether2…   ·   Switches GNS3: Ethernet0, Ethernet1, Ethernet2…</text>
+</svg>

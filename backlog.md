@@ -42,24 +42,24 @@
 ## Epic F1 — Topología + hardening + backup · *vence vie 09/10*
 
 ### Despliegue (7 CHR + 2 switches + 2 hosts)
-- [ ] [R1] [R2] [R3] [R4] Crear proyecto en GNS3 y desplegar los 7 nodos MikroTik CHR cableados según la topología de 5 capas.
-- [ ] [R5] Conectar switches L2 de acceso y hosts finales (`PC-USER`, `SRV`).
+- [x] [R1] [R2] [R3] [R4] Crear proyecto en GNS3 y desplegar los 7 nodos MikroTik CHR cableados según la topología de 5 capas.
+- [x] [R5] Conectar switches L2 de acceso y hosts finales (`PC-USER`, `SRV`).
 
 ### IPs de enlace + loopbacks
-- [ ] [R2] Configurar direccionamiento IP en interfaces WAN de `ISP-1`, `ISP-2` y `EDGE`.
-- [ ] [R1] [R3] Configurar direccionamiento IP en enlaces P2P `EDGE ↔ CORE` y enlace inter-core `CORE-1 ↔ CORE-2`.
-- [ ] [R3] [R4] Configurar direccionamiento IP en enlaces de distribución `CORE ↔ DIST` y loopbacks de gestión.
-- [ ] [R4] [R5] Configurar interfaces LAN en `DIST-1` y `DIST-2`, y setear direccionamiento en `PC-USER` y `SRV`.
+- [x] [R2] Configurar direccionamiento IP en interfaces WAN de `ISP-1`, `ISP-2` y `EDGE`.
+- [x] [R1] [R3] Configurar direccionamiento IP en enlaces P2P `EDGE ↔ CORE` y enlace inter-core `CORE-1 ↔ CORE-2`.
+- [x] [R3] [R4] Configurar direccionamiento IP en enlaces de distribución `CORE ↔ DIST` y loopbacks de gestión.
+- [x] [R4] [R5] Configurar interfaces LAN en `DIST-1` y `DIST-2`, y setear direccionamiento en `PC-USER` y `SRV`.
 
 ### Snapshot BASE
-- [ ] [R5] Generar snapshot inicial del proyecto en GNS3 denominado `BASE` con la red cableada y con direccionamiento verificado.
+- [x] [R5] Generar snapshot inicial del proyecto en GNS3 denominado `BASE` con la red cableada y con direccionamiento verificado.
 
 ### Hardening (los 7 routers)
-- [ ] [R1] [R2] [R3] [R4] Aplicar cambio de contraseña de `admin`, creación del usuario `monitor` y deshabilitar servicios innecesarios en los 7 CHR.
-- [ ] [R5] Verificar bloqueo de puertos inseguros mediante escaneo/sondeo de servicios.
+- [x] [R1] [R2] [R3] [R4] Aplicar cambio de contraseña de `admin`, creación del usuario `monitor` y deshabilitar servicios innecesarios en los 7 CHR.
+- [x] [R5] Verificar bloqueo de puertos inseguros mediante escaneo/sondeo de servicios.
 
 ### Backup inicial (`/export`)
-- [ ] [R5] Ejecutar `/export compact` y `/system backup save` en los 7 routers y versionar los archivos en `backups/`.
+- [x] [R5] Ejecutar `/export compact` y `/system backup save` en los 7 routers y versionar los archivos en `backups/`.
 
 ---
 
