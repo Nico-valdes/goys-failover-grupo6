@@ -572,12 +572,11 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 | --- | --- | --- | --- | --- |
 | 02/10/2026 | [R1] Nicolás Valdés | `docs(f0): diseno inicial y definicion de politicas` | Cumplimiento del hito F0 de la cátedra GOYS | `git checkout <commit_previo>` |
 | 02/10/2026 | [R5] Ivan / Facundo | `docs(ipam): aprobacion de plan de direccionamiento y roles` | Establecer bases de direccionamiento sin solapamiento | Revertir commit de IPAM |
-| 08/10/2026 | [R3] Facundo Otero | `feat(core): direccionamiento base, core-core y hardening en core1 y core2` | Hito F1 | `git revert <hash>` o snapshot `BASE` (previo al hardening) |
-| 08/10/2026 | [R3] Facundo Otero (en reemplazo de [R1] Nicolás Valdés, de viaje) | `feat(edge): direccionamiento wan, core y hardening en edge` | Hito F1; sesión compartida | `git revert <hash>` o snapshot `BASE` |
-| 08/10/2026 | [R2] Ivan Vijandi | `feat(isp): direccionamiento base y hardening en isp1 e isp2` | Hito F1 | `git revert <hash>` o snapshot `BASE` |
-| 08/10/2026 | [R4] Franco Pietrantuono | `feat(dist): direccionamiento base y hardening en dist1 y dist2` | Hito F1 | `git revert <hash>` o snapshot `BASE` |
-| 08/10/2026 | [R5] Facundo Otero | `ops(backup): export inicial f1 de los 7 routers y evidencias` | Política de backup (sección 1.4) | Eliminar los archivos del commit |
-| 08/10/2026 | [R5] Ivan Vijandi | `docs(f1): cierre de hito f1 topologia hardening y backup` | Cierre del hito F1 (backlog, change log, memoria) | `git revert <hash>` |
+| 08/10/2026 | [R2] Ivan Vijandi | `feat(config): add initial configurations for ISP-1 and ISP-2` y `feat(config): add initial configuration files for ISP-1 and ISP-2` (a67b9ae, 0d1b6f4) | Hito F1: direccionamiento, hardening y export de ISP-1 e ISP-2 | `git revert <hash>` o snapshot `BASE` |
+| 08/10/2026 | [R3] Facundo Otero | `feat(config): add configuration files for CORE-1 and CORE-2 and backups` (4677d57) | Hito F1: direccionamiento, hardening y export de CORE-1 y CORE-2 | `git revert 4677d57` o snapshot `BASE` |
+| 08/10/2026 | [R1] Nicolás Valdés | `feat(config): add initial configuration files for edge device and backup` (1ae732c) | Hito F1: direccionamiento, hardening y export de EDGE | `git revert 1ae732c` o snapshot `BASE` |
+| 08/10/2026 | [R4] Franco Pietrantuono | `feat(dist): direccionamiento base y hardening en dist1 y dist2`, `fix: dists exports directory` y `feat(config): add configuration files for DIST-1 and DIST-2` (67c49e6, a7896dc, b2910bd) | Hito F1: direccionamiento, hardening y export de DIST-1 y DIST-2 | `git revert <hash>` o snapshot `BASE` |
+| 09/10/2026 | [R5] Facundo Otero | `docs(f1): cierre de hito f1 topologia hardening y backup` (408f22e) | Cierre del hito F1: capturas, diagrama, backlog, change log y memoria | `git revert 408f22e` |
 
 ### 6.2 Backups
 
@@ -722,7 +721,7 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 ### Entrega
 
 - [ ]  Memoria completa (todas las secciones de esta plantilla)
-- [ ]  Repo git con la estructura correcta y commits por rol
+- [x]  Repo git con la estructura correcta y commits por rol
 - [ ]  `backlog.md` con todas las tareas en “done”
-- [ ]  Capturas en la carpeta `capturas/`
+- [x]  Capturas en la carpeta `capturas/`
 - [ ]  Cada integrante puede defender su parte **y** una parte ajena
