@@ -1,4 +1,4 @@
-# 2026-10-08 07:57:08 by RouterOS 7.16
+# 2026-10-22 20:15:00 by RouterOS 7.16
 # software id = 
 #
 /interface bridge
@@ -26,6 +26,13 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing ospf instance
+add disabled=no name=ospf-main router-id=5.5.5.5
+/routing ospf area
+add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
+/routing ospf interface-template
+add area=backbone auth=md5 auth-key=Goys2026OspfPass interfaces=ether1,ether2,ether3,ether4 type=ptp
+add area=backbone interfaces=lo0 passive
 /system identity
 set name=CORE-2
 /system note
