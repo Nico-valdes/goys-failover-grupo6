@@ -4,7 +4,7 @@
 **Cátedra:** Gestión Operativa y Seguridad en Redes (GOYS)  
 **Institución:** Universidad Tecnológica Nacional — Facultad Regional La Plata (UTN FR La Plata)  
 **Ciclo Lectivo:** 2026  
-**Estado del Proyecto:** `Fase F1 — Completada` 
+**Estado del Proyecto:** `Fase F2 — Completada` 
 
 ---
 
@@ -97,7 +97,7 @@ goys-failover-grupo6/
 | :---: | :--- | :---: | :---: |
 | **F0** | **Diseño y Gestión de Cambio:** IPAM, corrección de diagrama, seguridad y backlog | **02/10/2026** | **Completado (Aprobado)** |
 | **F1** | **Topología y Hardening:** Despliegue de 7 CHR, cableado, snapshots base y hardening inicial | 09/10/2026 | Completado |
-| **F2** | **Convergencia Interna:** Despliegue de VRRP (load-sharing) y OSPF Área 0 con MD5 | 16/10/2026 | Pendiente |
+| **F2** | **Convergencia Interna:** Despliegue de VRRP (load-sharing) y OSPF Área 0 con MD5 | 16/10/2026 | **Completado** |
 | **F3** | **Borde y Resiliencia Externa:** eBGP multi-homing con TCP-MD5 y firewall en EDGE | 16/10/2026 | Pendiente |
 | **F4** | **Drills de Contingencia:** Ejecución de los 5 escenarios de falla, telemetría y runbooks | 20/10/2026 | Pendiente |
 | **F5** | **Memoria Técnica y Defensa:** Cierre documental, evidencias finales y coloquio oral | 23/10/2026 | Pendiente |

@@ -261,10 +261,9 @@ set show-at-login=no
 ### 3.3 EDGE
 
 ```
-# Script de configuracion para EDGE (configs/edge.rsc) - Fase F1/F3
-# FASE 1
-# 2026-10-08 07:57:12 by RouterOS 7.16
-# software id = 
+# Script de configuracion para EDGE (configs/edge.rsc) - Fase F1/F2
+# FASE 2
+# 2026-10-22 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -291,20 +290,25 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing ospf instance
+add disabled=no name=ospf-main router-id=3.3.3.3
+/routing ospf area
+add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
+/routing ospf interface-template
+add area=backbone auth=md5 auth-key=Goys2026OspfPass interfaces=ether3,ether4 type=ptp
+add area=backbone interfaces=lo0 passive
 /system identity
 set name=EDGE
 /system note
 set show-at-login=no
-
 ```
 
 ### 3.4 CORE-1
 
 ```
 # Script de configuracion para CORE-1 (configs/core1.rsc) - Fase F1/F2
-# FASE 1
-# 2026-10-08 07:56:41 by RouterOS 7.16
-# software id = 
+# FASE 2
+# 2026-10-22 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -331,20 +335,25 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing ospf instance
+add disabled=no name=ospf-main router-id=4.4.4.4
+/routing ospf area
+add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
+/routing ospf interface-template
+add area=backbone auth=md5 auth-key=Goys2026OspfPass interfaces=ether1,ether2,ether3,ether4 type=ptp
+add area=backbone interfaces=lo0 passive
 /system identity
 set name=CORE-1
 /system note
 set show-at-login=no
-
 ```
 
 ### 3.5 CORE-2
 
 ```
 # Script de configuracion para CORE-2 (configs/core2.rsc) - Fase F1/F2
-# FASE 1
-# 2026-10-08 07:57:08 by RouterOS 7.16
-# software id = 
+# FASE 2
+# 2026-10-22 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -371,6 +380,13 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing ospf instance
+add disabled=no name=ospf-main router-id=5.5.5.5
+/routing ospf area
+add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
+/routing ospf interface-template
+add area=backbone auth=md5 auth-key=Goys2026OspfPass interfaces=ether1,ether2,ether3,ether4 type=ptp
+add area=backbone interfaces=lo0 passive
 /system identity
 set name=CORE-2
 /system note
@@ -381,9 +397,8 @@ set show-at-login=no
 
 ```
 # Script de configuracion para DIST-1 (configs/dist1.rsc) - Fase F1/F2
-# FASE 1
-# 2026-10-08 07:51:19 by RouterOS 7.16
-# software id = 
+# FASE 2
+# 2026-10-22 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -392,6 +407,9 @@ set [ find default-name=ether1 ] disable-running-check=no
 set [ find default-name=ether2 ] disable-running-check=no
 set [ find default-name=ether3 ] disable-running-check=no
 set [ find default-name=ether4 ] disable-running-check=no
+/interface vrrp
+add authentication=simple interface=ether3 name=vrrp10-users password=Vrrp10 priority=150 version=2 vrid=10
+add authentication=simple interface=ether4 name=vrrp20-servers password=Vrrp20 priority=100 version=2 vrid=20
 /port
 set 0 name=serial0
 /ip neighbor discovery-settings
@@ -402,6 +420,8 @@ add address=10.0.0.14/30 interface=ether1 network=10.0.0.12
 add address=10.0.0.22/30 interface=ether2 network=10.0.0.20
 add address=192.168.10.2/24 interface=ether3 network=192.168.10.0
 add address=192.168.20.2/24 interface=ether4 network=192.168.20.0
+add address=192.168.10.1/24 interface=vrrp10-users network=192.168.10.0
+add address=192.168.20.1/24 interface=vrrp20-servers network=192.168.20.0
 /ip dhcp-client
 add interface=ether1
 /ip service
@@ -410,6 +430,13 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing ospf instance
+add disabled=no name=ospf-main router-id=6.6.6.6
+/routing ospf area
+add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
+/routing ospf interface-template
+add area=backbone auth=md5 auth-key=Goys2026OspfPass interfaces=ether1,ether2 type=ptp
+add area=backbone interfaces=lo0,ether3,ether4 passive
 /system identity
 set name=DIST-1
 /system note
@@ -420,9 +447,8 @@ set show-at-login=no
 
 ```
 # Script de configuracion para DIST-2 (configs/dist2.rsc) - Fase F1/F2
-#FASE 1
-# 2026-10-08 07:56:16 by RouterOS 7.16
-# software id = 
+# FASE 2
+# 2026-10-22 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -431,6 +457,9 @@ set [ find default-name=ether1 ] disable-running-check=no
 set [ find default-name=ether2 ] disable-running-check=no
 set [ find default-name=ether3 ] disable-running-check=no
 set [ find default-name=ether4 ] disable-running-check=no
+/interface vrrp
+add authentication=simple interface=ether3 name=vrrp10-users password=Vrrp10 priority=100 version=2 vrid=10
+add authentication=simple interface=ether4 name=vrrp20-servers password=Vrrp20 priority=150 version=2 vrid=20
 /port
 set 0 name=serial0
 /ip neighbor discovery-settings
@@ -441,6 +470,8 @@ add address=10.0.0.18/30 interface=ether1 network=10.0.0.16
 add address=10.0.0.26/30 interface=ether2 network=10.0.0.24
 add address=192.168.10.3/24 interface=ether3 network=192.168.10.0
 add address=192.168.20.3/24 interface=ether4 network=192.168.20.0
+add address=192.168.10.1/24 interface=vrrp10-users network=192.168.10.0
+add address=192.168.20.1/24 interface=vrrp20-servers network=192.168.20.0
 /ip dhcp-client
 add interface=ether1
 /ip service
@@ -449,11 +480,17 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing ospf instance
+add disabled=no name=ospf-main router-id=7.7.7.7
+/routing ospf area
+add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
+/routing ospf interface-template
+add area=backbone auth=md5 auth-key=Goys2026OspfPass interfaces=ether1,ether2 type=ptp
+add area=backbone interfaces=lo0,ether3,ether4 passive
 /system identity
 set name=DIST-2
 /system note
 set show-at-login=no
-
 ```
 
 ### 3.8 Hosts (PC-USER / SRV)
@@ -496,8 +533,36 @@ save
 
 *Figura 3 — Conectividad de los hosts hacia las IP reales de los routers de distribución.*
 
-Los hosts aún no alcanzan la IP virtual (`192.168.10.1` / `192.168.20.1`): VRRP se configura en F2.
+Los hosts alcanzaban inicialmente solo la IP física del router. Con la parametrización de F2, ambos hosts resuelven y operan contra sus Virtual IPs virtuales (`192.168.10.1` y `192.168.20.1`).
 Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`capturas/f1/06_snapshot_base.png`).
+
+#### Verificación F2 — Convergencia interna (VRRP + OSPF)
+
+Durante la Fase F2 se validó el funcionamiento integral de la capa de distribución (FHRP / VRRPv2 con autenticación simple y balanceo de carga activo/activo) y la capa de core/tránsito (OSPFv2 Área 0 backbone con autenticación criptográfica MD5).
+
+| Verificación | Dispositivo / Host | Comando | Resultado obtenido | Evidencia |
+| --- | --- | --- | --- | --- |
+| **VRRP Load-Sharing (Master USERS)** | `DIST-1` | `/interface vrrp print` | `vrrp10-users`: **RM** (Master, prio 150, MAC `00:00:5E:00:01:0A`)<br>`vrrp20-servers`: **B** (Backup, prio 100, MAC `00:00:5E:00:01:14`) | `capturas/f2/01_vrrp_dist1.png` |
+| **VRRP Load-Sharing (Master SERVERS)** | `DIST-2` | `/interface vrrp print` | `vrrp10-users`: **B** (Backup, prio 100, MAC `00:00:5E:00:01:0A`)<br>`vrrp20-servers`: **RM** (Master, prio 150, MAC `00:00:5E:00:01:14`) | `capturas/f2/02_vrrp_dist2.png` |
+| **Adyacencias OSPF Backbone** | `CORE-1` | `/routing ospf neighbor print` | 4 adyacencias en estado **Full**: `5.5.5.5` (CORE-2, core-core), `6.6.6.6` (DIST-1), `3.3.3.3` (EDGE) y `7.7.7.7` (DIST-2) | `capturas/f2/03_ospf_neighbors_core1.png` |
+| **Conectividad Inter-VLAN / Gateway** | `PC-USER` | `ping 192.168.20.100` | 100% de respuesta (5 paquetes recibidos, TTL=63), atravesando el gateway virtual VRRP y el tránsito OSPF | `capturas/f2/04_ping_pc_a_srv.png` |
+
+![Estado VRRP en DIST-1](../capturas/f2/01_vrrp_dist1.png)
+
+*Figura 4 — Grupos VRRP en DIST-1: Master para USERS (VRID 10) y Backup para SERVERS (VRID 20).*
+
+![Estado VRRP en DIST-2](../capturas/f2/02_vrrp_dist2.png)
+
+*Figura 5 — Grupos VRRP en DIST-2: Backup para USERS (VRID 10) y Master para SERVERS (VRID 20).*
+
+![Adyacencias OSPF en CORE-1](../capturas/f2/03_ospf_neighbors_core1.png)
+
+*Figura 6 — Adyacencias OSPFv2 en CORE-1 con sus 4 vecinos internos en estado Full.*
+
+![Ping inter-VLAN desde PC-USER a SRV](../capturas/f2/04_ping_pc_a_srv.png)
+
+*Figura 7 — Conectividad extremo a extremo entre PC-USER y SRV cruzando los gateways virtuales VRRP y el núcleo OSPF.*
+
 
 ### 4.2 Los 5 drills de failover
 
@@ -556,11 +621,14 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 | Firewall/ACL (edge) | Router `EDGE` (interfaz WAN) | Bloqueo efectivo de paquetes no solicitados en la cadena input |
 
 **Estado F1:** hardening aplicado en los 7 routers (contraseña de `admin`, usuario `monitor` de solo lectura, servicios `telnet`, `ftp`, `www`, `api` y `api-ssl` deshabilitados, descubrimiento de vecinos desactivado).
-
 - Servicios deshabilitados: `capturas/f1/07_services_core1.png`.
 - Prueba de mínimo privilegio con `monitor` (el cambio de configuración es rechazado): `capturas/f1/08_monitor_sin_permisos.png`.
 - Sondeo de puertos inseguros entre routers vecinos (conexión rechazada): `capturas/f1/09_sondeo_servicios.png`.
-- OSPF MD5, BGP TCP-MD5, VRRP auth y firewall edge corresponden a F2/F3.
+
+**Estado F2:** seguridad en protocolos internos implementada y validada en producción virtualizada:
+- **OSPF MD5:** implementado en todas las interfaces del Área 0 (`EDGE`, `CORE-1`, `CORE-2`, `DIST-1`, `DIST-2`) con clave criptográfica `Goys2026OspfPass`. Adyacencias en estado Full verificadas (`capturas/f2/03_ospf_neighbors_core1.png`).
+- **VRRP Simple Auth:** configurado en los grupos 10 y 20 bajo VRRPv2 (RFC 3768) con contraseñas `Vrrp10` y `Vrrp20` en `DIST-1` y `DIST-2` (`capturas/f2/01_vrrp_dist1.png` y `02_vrrp_dist2.png`).
+- BGP TCP-MD5 y firewall edge corresponden al hito F3.
 
 ---
 
@@ -577,6 +645,10 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 | 08/10/2026 | [R1] Nicolás Valdés | `feat(config): add initial configuration files for edge device and backup` (1ae732c) | Hito F1: direccionamiento, hardening y export de EDGE | `git revert 1ae732c` o snapshot `BASE` |
 | 08/10/2026 | [R4] Franco Pietrantuono | `feat(dist): direccionamiento base y hardening en dist1 y dist2`, `fix: dists exports directory` y `feat(config): add configuration files for DIST-1 and DIST-2` (67c49e6, a7896dc, b2910bd) | Hito F1: direccionamiento, hardening y export de DIST-1 y DIST-2 | `git revert <hash>` o snapshot `BASE` |
 | 09/10/2026 | [R5] Facundo Otero | `docs(f1): cierre de hito f1 topologia hardening y backup` (408f22e) | Cierre del hito F1: capturas, diagrama, backlog, change log y memoria | `git revert 408f22e` |
+| 22/10/2026 | [R4] Franco Pietrantuono | `feat(vrrp): configurar grupos 10 y 20 con load sharing y auth en dist1 y dist2` | Hito F2: convergencia de primer salto y redundancia de gateway | Deshabilitar interfaces VRRP |
+| 22/10/2026 | [R3] Facundo Otero | `feat(ospf): configurar area 0 con md5 en core1, core2, dist1 y dist2` | Hito F2: enrutamiento dinamico interno y enlace core-core | Deshabilitar instancia OSPF |
+| 22/10/2026 | [R1] Nicolás Valdés | `feat(ospf): extender area 0 hacia router edge` | Hito F2: transito interno hacia borde corporativo | Deshabilitar interfaces OSPF en edge |
+| 22/10/2026 | [R5] Nicolás Valdés | `docs(f2): cierre de hito f2 convergencia interna vrrp y ospf` | Cierre de hito F2: capturas, configs, backlog y memoria | `git revert <hash>` |
 
 ### 6.2 Backups
 
@@ -653,6 +725,10 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 - `capturas/f1/06_snapshot_base.png` — snapshot `BASE`
 - `capturas/f1/07_services_core1.png`, `08_monitor_sin_permisos.png`, `09_sondeo_servicios.png` — hardening
 - `capturas/f1/10_backups_file_print.png`, `11_restore_dist1.png` — backups y restore
+- `capturas/f2/01_vrrp_dist1.png` — Estado VRRP en `DIST-1` (Master vrid 10, Backup vrid 20)
+- `capturas/f2/02_vrrp_dist2.png` — Estado VRRP en `DIST-2` (Backup vrid 10, Master vrid 20)
+- `capturas/f2/03_ospf_neighbors_core1.png` — Adyacencias OSPF en `CORE-1` (4 vecinos en estado Full)
+- `capturas/f2/04_ping_pc_a_srv.png` — Conectividad extremo a extremo desde `PC-USER` a `SRV`
 
 ---
 
@@ -669,6 +745,12 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 - **Cableado:** conviene verificar la matriz de interfaces con `/ip neighbor print` **antes** de aplicar el hardening, que deshabilita el descubrimiento de vecinos.
 - **Backups:** el export de texto es la evidencia auditable; el `.backup` binario incluye usuarios y claves, pero no es extraíble del CHR sin una red de gestión.
 - **Limitación a considerar en F4:** los tiempos de convergencia de los drills se miden sobre virtualización anidada y deben interpretarse con esa salvedad.
+
+> Post-mortem de la fase F2 (VRRP y OSPF):
+> 
+- **VRRPv3 vs VRRPv2 y autenticación:** En RouterOS v7, VRRP opera de manera nativa bajo la versión 3 (RFC 5798), la cual deprecó los campos de autenticación en texto claro. Para cumplir con el requerimiento de seguridad de la cátedra fue necesario forzar `version=2` (RFC 3768), respetando la cota máxima estricta de 8 caracteres (`Vrrp10` y `Vrrp20`) requerida por la implementación.
+- **Virtualización Anidada (KVM):** La activación de `Nested VT-x/AMD-V` en VirtualBox resultó determinante para habilitar aceleración KVM directa en QEMU, eliminando la emulación por software TCG y permitiendo la operación fluida de los 7 nodos CHR.
+- **Convergencia L3:** La inyección de interfaces pasivas en OSPF para los segmentos de acceso L2 (`ether3` y `ether4`) en ambos routers de distribución permitió que el Core y Edge resolvieran rutas simétricas hacia los hosts sin exponer paquetes Hello hacia la capa de acceso.
 
 ---
 
@@ -697,17 +779,17 @@ Snapshot `BASE` generado con la red cableada y el direccionamiento verificado (`
 ### Redes
 
 - [x]  7 CHR + 2 switches + 2 hosts levantados y cableados
-- [ ]  VRRP operativo (2 grupos, load-sharing)
-- [ ]  OSPF área 0 con adyacencias (incluido core–core)
+- [x]  VRRP operativo (2 grupos, load-sharing)
+- [x]  OSPF área 0 con adyacencias (incluido core–core)
 - [ ]  BGP eBGP ×2 establecido (multi-homing)
 - [ ]  Los 5 drills ejecutados y documentados (runbook + post-mortem + tiempo)
 
 ### Seguridad
 
 - [x]  Hardening aplicado (password, usuario mínimo, servicios apagados)
-- [ ]  OSPF MD5 funcionando
+- [x]  OSPF MD5 funcionando
 - [ ]  BGP TCP-MD5 funcionando
-- [ ]  VRRP auth funcionando
+- [x]  VRRP auth funcionando
 - [ ]  Firewall edge aplicado
 - [ ]  Prueba con clave incorrecta → debe **fallar** (documentado)
 

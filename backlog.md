@@ -66,21 +66,21 @@
 ## Epic F2 — VRRP + OSPF · *vence vie 16/10*
 
 ### VRRP (2 grupos, load-sharing, auth)
-- [ ] [R4] Configurar VRRP vrid 10 en `DIST-1` (Master, priority 150) y `DIST-2` (Backup, priority 100) para subred USERS.
-- [ ] [R4] Configurar VRRP vrid 20 en `DIST-2` (Master, priority 150) y `DIST-1` (Backup, priority 100) para subred SERVERS.
-- [ ] [R4] Configurar autenticación y preemption en ambos grupos VRRP.
-- [ ] [R5] Verificar estados Master/Backup y respuesta de VIPs con `/interface vrrp print`.
+- [x] [R4] Configurar VRRP vrid 10 en `DIST-1` (Master, priority 150) y `DIST-2` (Backup, priority 100) para subred USERS.
+- [x] [R4] Configurar VRRP vrid 20 en `DIST-2` (Master, priority 150) y `DIST-1` (Backup, priority 100) para subred SERVERS.
+- [x] [R4] Configurar autenticación y preemption en ambos grupos VRRP.
+- [x] [R5] Verificar estados Master/Backup y respuesta de VIPs con `/interface vrrp print`.
 
 ### OSPF área 0 (con MD5, incluido core–core)
-- [ ] [R3] Configurar proceso OSPFv2 en `CORE-1` y `CORE-2` con Router-IDs canónicos y autenticación MD5.
-- [ ] [R1] [R3] Levantar adyacencias OSPF entre `EDGE` y ambos routers Core.
-- [ ] [R3] Levantar adyacencia OSPF en el enlace troncal `CORE-1 ↔ CORE-2`.
-- [ ] [R3] [R4] Extender OSPF hacia `DIST-1` y `DIST-2`, declarando redes de tránsito y pasivas.
-- [ ] [R5] Validar formación de adyacencias Full con `/routing ospf neighbor print`.
+- [x] [R3] Configurar proceso OSPFv2 en `CORE-1` y `CORE-2` con Router-IDs canónicos y autenticación MD5.
+- [x] [R1] [R3] Levantar adyacencias OSPF entre `EDGE` y ambos routers Core.
+- [x] [R3] Levantar adyacencia OSPF en el enlace troncal `CORE-1 ↔ CORE-2`.
+- [x] [R3] [R4] Extender OSPF hacia `DIST-1` y `DIST-2`, declarando redes de tránsito y pasivas.
+- [x] [R5] Validar formación de adyacencias Full con `/routing ospf neighbor print`.
 
 ### Verificación L3 (ping intra-LAN + gateway virtual)
-- [ ] [R5] Verificar ping desde `PC-USER` y `SRV` hacia sus respectivos gateways virtuales VRRP.
-- [ ] [R5] Verificar conectividad inter-VLAN entre `PC-USER` y `SRV` a través de la capa de distribución.
+- [x] [R5] Verificar ping desde `PC-USER` y `SRV` hacia sus respectivos gateways virtuales VRRP.
+- [x] [R5] Verificar conectividad inter-VLAN entre `PC-USER` y `SRV` a través de la capa de distribución.
 
 ---
 
