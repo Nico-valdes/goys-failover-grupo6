@@ -1,4 +1,4 @@
-# 2026-10-08 07:57:14 by RouterOS 7.16
+# 2026-10-23 00:25:00 by RouterOS 7.16
 # software id = 
 #
 /interface bridge
@@ -23,6 +23,10 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing bgp template
+add as=65001 name=bgp-tmpl-edge router-id=1.1.1.1
+/routing bgp connection
+add local.role=ebgp name=bgp-to-edge output.default-originate=always remote.address=198.51.100.2 .as=65000 tcp-md5-key=BgpSecret2026Edge templates=bgp-tmpl-edge
 /system identity
 set name=ISP-1
 /system note
