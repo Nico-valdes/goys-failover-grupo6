@@ -187,10 +187,9 @@ La política de respaldo se fundamenta en dos mecanismos complementarios provist
 ### 3.1 ISP-1
 
 ```
-# Script de configuracion para ISP-1 (configs/isp1.rsc) - Fase F1
-# FASE 1
-# 2026-10-08 07:57:14 by RouterOS 7.16
-# software id = 
+# Script de configuracion para ISP-1 (configs/isp1.rsc) - Fase F1/F3
+# FASE 3
+# 2026-10-23 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -214,20 +213,22 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing bgp template
+add as=65001 name=bgp-tmpl-edge router-id=1.1.1.1
+/routing bgp connection
+add local.role=ebgp name=bgp-to-edge output.default-originate=always remote.address=198.51.100.2 .as=65000 tcp-md5-key=BgpSecret2026Edge templates=bgp-tmpl-edge
 /system identity
 set name=ISP-1
 /system note
 set show-at-login=no
-
 ```
 
 ### 3.2 ISP-2
 
 ```
 # Script de configuracion para ISP-2 (configs/isp2.rsc) - Fase F1/F3
-# FASE 1
-# 2026-10-08 07:57:17 by RouterOS 7.16
-# software id = 
+# FASE 3
+# 2026-10-23 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -251,19 +252,22 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/routing bgp template
+add as=65002 name=bgp-tmpl-edge router-id=2.2.2.2
+/routing bgp connection
+add local.role=ebgp name=bgp-to-edge output.default-originate=always remote.address=203.0.113.2 .as=65000 tcp-md5-key=BgpSecret2026Edge templates=bgp-tmpl-edge
 /system identity
 set name=ISP-2
 /system note
 set show-at-login=no
-
 ```
 
 ### 3.3 EDGE
 
 ```
-# Script de configuracion para EDGE (configs/edge.rsc) - Fase F1/F2
-# FASE 2
-# 2026-10-22 by RouterOS 7.16
+# Script de configuracion para EDGE (configs/edge.rsc) - Fase F1/F2/F3
+# FASE 3
+# 2026-10-23 by RouterOS 7.16
 #
 /interface bridge
 add name=lo0
@@ -272,6 +276,14 @@ set [ find default-name=ether1 ] disable-running-check=no
 set [ find default-name=ether2 ] disable-running-check=no
 set [ find default-name=ether3 ] disable-running-check=no
 set [ find default-name=ether4 ] disable-running-check=no
+/interface list
+add name=WAN
+add name=LAN
+/interface list member
+add interface=ether1 list=WAN
+add interface=ether2 list=WAN
+add interface=ether3 list=LAN
+add interface=ether4 list=LAN
 /port
 set 0 name=serial0
 /ip neighbor discovery-settings
@@ -290,8 +302,24 @@ set ftp disabled=yes
 set www disabled=yes
 set api disabled=yes
 set api-ssl disabled=yes
+/ip firewall filter
+add action=accept chain=input comment="Aceptar conexiones establecidas y relacionadas" connection-state=established,related
+add action=drop chain=input comment="Descartar trafico invalido" connection-state=invalid
+add action=accept chain=input comment="Permitir diagnostico ICMP" protocol=icmp
+add action=accept chain=input comment="Permitir BGP desde ISPs" dst-port=179 in-interface-list=WAN protocol=tcp
+add action=accept chain=input comment="Permitir OSPF desde Core interno" in-interface-list=LAN protocol=ospf
+add action=accept chain=input comment="Permitir gestion desde LAN/Core" in-interface-list=LAN
+add action=drop chain=input comment="Bloquear accesos no autorizados en WAN" in-interface-list=WAN
+/routing filter rule
+add chain=bgp-in-isp1 rule="set bgp-local-pref 200; accept;"
+add chain=bgp-in-isp2 rule="set bgp-local-pref 100; accept;"
+/routing bgp template
+add as=65000 name=bgp-tmpl-edge router-id=3.3.3.3
+/routing bgp connection
+add input.filter=bgp-in-isp1 local.role=ebgp name=bgp-isp1 output.redistribute=ospf remote.address=198.51.100.1 .as=65001 tcp-md5-key=BgpSecret2026Edge templates=bgp-tmpl-edge
+add input.filter=bgp-in-isp2 local.role=ebgp name=bgp-isp2 output.redistribute=ospf remote.address=203.0.113.1 .as=65002 tcp-md5-key=BgpSecret2026Edge templates=bgp-tmpl-edge
 /routing ospf instance
-add disabled=no name=ospf-main router-id=3.3.3.3
+add disabled=no name=ospf-main originate-default=always router-id=3.3.3.3
 /routing ospf area
 add area-id=0.0.0.0 disabled=no instance=ospf-main name=backbone
 /routing ospf interface-template
@@ -563,6 +591,27 @@ Durante la Fase F2 se validó el funcionamiento integral de la capa de distribuc
 
 *Figura 7 — Conectividad extremo a extremo entre PC-USER y SRV cruzando los gateways virtuales VRRP y el núcleo OSPF.*
 
+#### Verificación F3 — Borde y resiliencia externa (eBGP + Firewall)
+
+En la Fase F3 se consolidó la salida al exterior ("Internet") mediante **eBGP Multi-homing** hacia los dos proveedores de tránsito (`ISP-1` AS 65001 e `ISP-2` AS 65002), con autenticación criptográfica **TCP-MD5**, priorización por **Local Preference** en `EDGE` y protección perimetral mediante **Firewall de filtrado de paquetes**:
+
+| Verificación | Dispositivo / Host | Comando | Resultado obtenido | Evidencia |
+| --- | --- | --- | --- | --- |
+| **Sesiones eBGP Multi-homing** | `EDGE` | `/routing bgp session print` | Sesiones con `198.51.100.1` (ISP-1) y `203.0.113.1` (ISP-2) en estado **`established`** (`E`) con autenticación TCP-MD5 | `capturas/f3/01_bgp_sessions_edge.png` |
+| **Política de Salida (Local-Pref)** | `EDGE` | `/routing route print where dst-address in 0.0.0.0/0` | Ruta por defecto `0.0.0.0/0` activa (`DA`) vía `198.51.100.1` (ISP-1) con LocalPref 200; ruta de ISP-2 en espera (`D`) con LocalPref 100 como backup | `capturas/f3/02_default_route_edge.png` |
+| **Trazabilidad L3 hacia Internet** | `PC-USER` | `trace 1.1.1.1` | Traza completa exitosa en 4 saltos: `192.168.10.1` (VRRP DIST-1) ➔ `10.0.0.17` (Core) ➔ `10.0.0.1` (Edge) ➔ `1.1.1.1` (ISP-1) | `capturas/f3/03_traceroute_pc_a_isp1.png` |
+
+![Sesiones eBGP en EDGE](../capturas/f3/01_bgp_sessions_edge.png)
+
+*Figura 8 — Sesiones eBGP establecidas en EDGE hacia ISP-1 e ISP-2 con autenticación TCP-MD5.*
+
+![Ruta por defecto y Local Preference en EDGE](../capturas/f3/02_default_route_edge.png)
+
+*Figura 9 — Selección de ruta por defecto BGP priorizando ISP-1 (Local-Preference 200) sobre ISP-2 (Local-Preference 100).*
+
+![Traceroute desde PC-USER hacia ISP-1](../capturas/f3/03_traceroute_pc_a_isp1.png)
+
+*Figura 10 — Trazabilidad de paquetes desde la red de usuarios atravesando todas las capas hasta la loopback pública de ISP-1.*
 
 ### 4.2 Los 5 drills de failover
 
@@ -628,7 +677,10 @@ Durante la Fase F2 se validó el funcionamiento integral de la capa de distribuc
 **Estado F2:** seguridad en protocolos internos implementada y validada en producción virtualizada:
 - **OSPF MD5:** implementado en todas las interfaces del Área 0 (`EDGE`, `CORE-1`, `CORE-2`, `DIST-1`, `DIST-2`) con clave criptográfica `Goys2026OspfPass`. Adyacencias en estado Full verificadas (`capturas/f2/03_ospf_neighbors_core1.png`).
 - **VRRP Simple Auth:** configurado en los grupos 10 y 20 bajo VRRPv2 (RFC 3768) con contraseñas `Vrrp10` y `Vrrp20` en `DIST-1` y `DIST-2` (`capturas/f2/01_vrrp_dist1.png` y `02_vrrp_dist2.png`).
-- BGP TCP-MD5 y firewall edge corresponden al hito F3.
+
+**Estado F3:** seguridad perimetral e inter-dominio implementada:
+- **BGP TCP-MD5:** autenticación criptográfica robusta en ambas sesiones eBGP entre `EDGE` y los proveedores `ISP-1` (AS 65001) e `ISP-2` (AS 65002) con clave secreta `BgpSecret2026Edge`. Sesiones verificadas en estado `established` (`capturas/f3/01_bgp_sessions_edge.png`).
+- **Firewall perimetral en EDGE:** filtrado de paquetes implementado mediante listas de interfaz `WAN` (`ether1`, `ether2`) y `LAN` (`ether3`, `ether4`). Se bloquea todo intento de conexión no solicitada desde interfaces públicas, preservando el acceso solo para sesiones BGP autorizadas (puerto 179 TCP) y permitiendo la gestión administrativa exclusivamente desde la red interna.
 
 ---
 
@@ -648,7 +700,10 @@ Durante la Fase F2 se validó el funcionamiento integral de la capa de distribuc
 | 22/10/2026 | [R4] Franco Pietrantuono | `feat(vrrp): configurar grupos 10 y 20 con load sharing y auth en dist1 y dist2` | Hito F2: convergencia de primer salto y redundancia de gateway | Deshabilitar interfaces VRRP |
 | 22/10/2026 | [R3] Facundo Otero | `feat(ospf): configurar area 0 con md5 en core1, core2, dist1 y dist2` | Hito F2: enrutamiento dinamico interno y enlace core-core | Deshabilitar instancia OSPF |
 | 22/10/2026 | [R1] Nicolás Valdés | `feat(ospf): extender area 0 hacia router edge` | Hito F2: transito interno hacia borde corporativo | Deshabilitar interfaces OSPF en edge |
-| 22/10/2026 | [R5] Nicolás Valdés | `docs(f2): cierre de hito f2 convergencia interna vrrp y ospf` | Cierre de hito F2: capturas, configs, backlog y memoria | `git revert <hash>` |
+| 22/10/2026 | [R5] Nicolás Valdés | `docs(f2): cierre de hito f2 convergencia interna vrrp y ospf` | Cierre de hito F2: capturas, configs, backlog y memoria | `git revert e853414` |
+| 23/10/2026 | [R2] Ivan Vijandi | `feat(bgp): configurar ebgp en isp1 e isp2 con default-originate y tcp-md5` | Hito F3: simulacion de upstream providers y anuncio de rutas | Deshabilitar conexiones BGP |
+| 23/10/2026 | [R1] Nicolás Valdés | `feat(bgp): configurar ebgp multihoming, filtros local-pref y firewall en edge` | Hito F3: multi-homing BGP, inyeccion default OSPF y proteccion perimetral | Deshabilitar sesiones BGP y reglas firewall |
+| 23/10/2026 | [R5] Nicolás Valdés | `docs(f3): cierre de hito f3 borde multi-homing bgp y firewall` | Cierre de hito F3: capturas, configs, backlog y memoria | `git revert <hash>` |
 
 ### 6.2 Backups
 
@@ -729,6 +784,9 @@ Durante la Fase F2 se validó el funcionamiento integral de la capa de distribuc
 - `capturas/f2/02_vrrp_dist2.png` — Estado VRRP en `DIST-2` (Backup vrid 10, Master vrid 20)
 - `capturas/f2/03_ospf_neighbors_core1.png` — Adyacencias OSPF en `CORE-1` (4 vecinos en estado Full)
 - `capturas/f2/04_ping_pc_a_srv.png` — Conectividad extremo a extremo desde `PC-USER` a `SRV`
+- `capturas/f3/01_bgp_sessions_edge.png` — Sesiones eBGP establecidas en EDGE hacia ISP-1 e ISP-2
+- `capturas/f3/02_default_route_edge.png` — Tabla de rutas en EDGE con selección de ISP-1 vía Local-Preference 200
+- `capturas/f3/03_traceroute_pc_a_isp1.png` — Traceroute extremo a extremo desde PC-USER hacia ISP-1
 
 ---
 
@@ -751,6 +809,12 @@ Durante la Fase F2 se validó el funcionamiento integral de la capa de distribuc
 - **VRRPv3 vs VRRPv2 y autenticación:** En RouterOS v7, VRRP opera de manera nativa bajo la versión 3 (RFC 5798), la cual deprecó los campos de autenticación en texto claro. Para cumplir con el requerimiento de seguridad de la cátedra fue necesario forzar `version=2` (RFC 3768), respetando la cota máxima estricta de 8 caracteres (`Vrrp10` y `Vrrp20`) requerida por la implementación.
 - **Virtualización Anidada (KVM):** La activación de `Nested VT-x/AMD-V` en VirtualBox resultó determinante para habilitar aceleración KVM directa en QEMU, eliminando la emulación por software TCG y permitiendo la operación fluida de los 7 nodos CHR.
 - **Convergencia L3:** La inyección de interfaces pasivas en OSPF para los segmentos de acceso L2 (`ether3` y `ether4`) en ambos routers de distribución permitió que el Core y Edge resolvieran rutas simétricas hacia los hosts sin exponer paquetes Hello hacia la capa de acceso.
+
+> Post-mortem de la fase F3 (eBGP Multi-homing y Firewall):
+> 
+- **Evolución sintáctica de BGP en RouterOS v7:** La autenticación TCP-MD5 se desacopló del template y debe fijarse de forma atómica en cada conexión (`/routing bgp connection`). Asimismo, los anuncios de ruta requieren prefijos estructurados (`output.default-originate=always` y `output.redistribute=ospf`).
+- **Políticas de selección determinísticas:** La asignación de `bgp-local-pref 200` para ISP-1 y `100` para ISP-2 asegura predictibilidad total en la egress selection, garantizando que el tráfico saliente siempre prefiera el upstream primario mientras esté operativo.
+- **Modularidad del Firewall perimetral:** El uso de listas de interfaz (`interface-list WAN` y `LAN`) evita reglas duplicadas, cierra el plano de datos frente a escaneos externos y protege el plano de control (puerto TCP 179 BGP) de manera selectiva.
 
 ---
 
@@ -781,16 +845,16 @@ Durante la Fase F2 se validó el funcionamiento integral de la capa de distribuc
 - [x]  7 CHR + 2 switches + 2 hosts levantados y cableados
 - [x]  VRRP operativo (2 grupos, load-sharing)
 - [x]  OSPF área 0 con adyacencias (incluido core–core)
-- [ ]  BGP eBGP ×2 establecido (multi-homing)
+- [x]  BGP eBGP ×2 establecido (multi-homing)
 - [ ]  Los 5 drills ejecutados y documentados (runbook + post-mortem + tiempo)
 
 ### Seguridad
 
 - [x]  Hardening aplicado (password, usuario mínimo, servicios apagados)
 - [x]  OSPF MD5 funcionando
-- [ ]  BGP TCP-MD5 funcionando
+- [x]  BGP TCP-MD5 funcionando
 - [x]  VRRP auth funcionando
-- [ ]  Firewall edge aplicado
+- [x]  Firewall edge aplicado
 - [ ]  Prueba con clave incorrecta → debe **fallar** (documentado)
 
 ### Operación

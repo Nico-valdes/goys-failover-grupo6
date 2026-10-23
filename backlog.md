@@ -87,21 +87,21 @@
 ## Epic F3 — BGP + firewall · *vence vie 16/10*
 
 ### eBGP multi-homing (2 sesiones, TCP-MD5)
-- [ ] [R2] Configurar AS 65001 en `ISP-1` y AS 65002 en `ISP-2` con anuncios de rutas simuladas hacia Internet.
-- [ ] [R1] Configurar AS 65000 en `EDGE` y levantar sesiones eBGP con `ISP-1` e `ISP-2` con autenticación TCP-MD5.
-- [ ] [R1] Establecer política de salida (Local-Preference) priorizando ISP-1 como enlace primario e ISP-2 como backup.
+- [x] [R2] Configurar AS 65001 en `ISP-1` y AS 65002 en `ISP-2` con anuncios de rutas simuladas hacia Internet.
+- [x] [R1] Configurar AS 65000 en `EDGE` y levantar sesiones eBGP con `ISP-1` e `ISP-2` con autenticación TCP-MD5.
+- [x] [R1] Establecer política de salida (Local-Preference) priorizando ISP-1 como enlace primario e ISP-2 como backup.
 
 ### Redistribución OSPF→BGP y ruta por defecto
-- [ ] [R1] Inyectar ruta por defecto aprendida por BGP hacia el dominio interno OSPF Área 0.
-- [ ] [R1] Redistribuir prefijos internos hacia los ISPs según políticas de anuncio autorizadas.
+- [x] [R1] Inyectar ruta por defecto aprendida por BGP hacia el dominio interno OSPF Área 0.
+- [x] [R1] Redistribuir prefijos internos hacia los ISPs según políticas de anuncio autorizadas.
 
 ### Salida a "Internet" (host → loopback ISP)
-- [ ] [R5] Ejecutar traceroute desde `PC-USER` y `SRV` hacia las loopbacks de `ISP-1` e `ISP-2`.
-- [ ] [R5] Comprobar simetría y resolución de saltos a través del camino primario `EDGE ↔ ISP-1`.
+- [x] [R5] Ejecutar traceroute desde `PC-USER` y `SRV` hacia las loopbacks de `ISP-1` e `ISP-2`.
+- [x] [R5] Comprobar simetría y resolución de saltos a través del camino primario `EDGE ↔ ISP-1`.
 
 ### Firewall edge (filtro + plano de gestión)
-- [ ] [R1] Configurar reglas de firewall en `EDGE` (cadena input: drop de tráfico no autorizado en WAN, accept established/related).
-- [ ] [R1] Proteger el plano de control y limitar acceso administrativo por interfaces externas.
+- [x] [R1] Configurar reglas de firewall en `EDGE` (cadena input: drop de tráfico no autorizado en WAN, accept established/related).
+- [x] [R1] Proteger el plano de control y limitar acceso administrativo por interfaces externas.
 
 ---
 
