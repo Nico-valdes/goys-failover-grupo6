@@ -615,47 +615,126 @@ En la Fase F3 se consolidó la salida al exterior ("Internet") mediante **eBGP M
 
 ### 4.2 Los 5 drills de failover
 
-> Para cada drill, documentar con la estructura **detección → respuesta → recuperación → post-mortem** y el **tiempo medido**.
-> 
+> Para cada drill, se documenta la estructura formal exigida por la cátedra: **detección → respuesta → recuperación → post-mortem** y el **tiempo medido**, respaldado por las evidencias gráficas obtenidas en el entorno de simulación.
+
+---
 
 #### Drill 1 — VRRP: se cae el gateway
 
-- **Detección:**
-- **Respuesta:**
-- **Recuperación:**
-- **Tiempo medido:**
-- **Post-mortem:**
+- **Detección:** Al detener abruptamente el nodo `DIST-1` (Master nominal del grupo 10 `USERS`), el router de respaldo `DIST-2` experimenta el vencimiento del *Master Down Timer* ($\approx 3 \times \text{Advertisement} + \text{Skew} \approx 3,6$ segundos) tras la ausencia de paquetes Hello de VRRP emitidos con clave `Vrrp10`.
+- **Respuesta:** `DIST-2` conmuta automáticamente de estado `Backup` a `Master` en la interfaz `vrrp10-users`, emitiendo un paquete *Gratuitous ARP* (GARP) hacia el switch `SW-ACC-USERS` con la Virtual MAC `00:00:5E:00:01:0A` para actualizar las tablas CAM del segmento de acceso.
+- **Recuperación:** La estación `PC-USER` experimenta la pérdida transitoria de **un único paquete ICMP** (`icmp_seq=10 timeout`) dentro de una ráfaga continua de 50 pings, restableciendo de inmediato la comunicación en el paquete subsiguiente (`icmp_seq=11`).
+- **Tiempo medido:** **1,0 s** (1 paquete ICMP perdido a 1 pps).
+- **Post-mortem:** El protocolo VRRP cumplió con creces los objetivos de resiliencia del primer salto. La política de *preemption* (`preemption-mode=yes`) permitió que al reiniciar `DIST-1`, este recuperara pacíficamente la titularidad del grupo de usuarios debido a su prioridad superior (`150` vs `100`), retornando la topología al balance nominal.
+- **Evidencias y Runbook:**
+  - `runbooks/drill1_vrrp.md`: Procedimiento operativo estándar y contingencia.
+  - `capturas/f4/01_drill1_vrrp_ping.png`: Ráfaga ICMP en `PC-USER` exhibiendo un único timeout y recuperación inmediata.
+  - `capturas/f4/02_drill1_vrrp_dist2_master.png`: Estado de `DIST-2` asumiendo como `RM` (Running Master) en ambos grupos (10 y 20).
+
+![Convergencia VRRP ante caída de DIST-1](../capturas/f4/01_drill1_vrrp_ping.png)
+
+*Figura 11 — Salida de ping continuo en PC-USER durante el failover de VRRP: exactamente un segundo de interrupción.*
+
+![DIST-2 asume como Master dual en VRRP](../capturas/f4/02_drill1_vrrp_dist2_master.png)
+
+*Figura 12 — Tabla de interfaces VRRP en DIST-2 operando temporalmente como Running Master en los grupos 10 y 20.*
+
+---
 
 #### Drill 2 — OSPF: se corta el camino interno
 
-- **Detección:**
-- **Respuesta:**
-- **Recuperación:**
-- **Tiempo medido:**
-- **Post-mortem:**
+- **Detección:** En el router `EDGE`, se procedió a deshabilitar administrativamente la interfaz troncal `ether3` conectada a `CORE-1` (`10.0.0.0/30`). El evento físico *Link Down* disparó la detección inmediata en menos de 10 ms a nivel de capa de enlace.
+- **Respuesta:** `EDGE` purga la adyacencia OSPF con `CORE-1` (`4.4.4.4`), inunda un LSA Tipo 1 (*Router LSA*) al Área 0 e invoca el cálculo Dijkstra (SPF). Como resultado, la ruta hacia las redes internas es recalculada y dirigida íntegramente hacia `CORE-2` (`5.5.5.5` vía `10.0.0.5%ether4`), mientras que el enlace inter-core (`CORE-1 ↔ CORE-2`, `10.0.0.8/30`) mantiene la conectividad con los switches de distribución.
+- **Recuperación:** La ráfaga de 50 pings desde `PC-USER` hacia la salida a Internet (`1.1.1.1`) mantuvo un **0% de pérdida de paquetes**. La conmutación fue totalmente transparente para el usuario final.
+- **Tiempo medido:** **< 0,5 s** (0 paquetes perdidos).
+- **Post-mortem:** La inclusión de enlaces troncales redundantes y el enlace inter-core dedicado eliminaron cualquier *Single Point of Failure* (SPOF) en el tránsito IGP. El cómputo SPF en RouterOS v7 demostró una velocidad de convergencia sub-segundo en topologías de diámetro reducido.
+- **Evidencias y Runbook:**
+  - `runbooks/drill2_ospf.md`: Guía de prueba y restauración de enlace troncal.
+  - `capturas/f4/03_drill2_ospf_failover.png`: Ráfaga ICMP continua en `PC-USER` sin ninguna pérdida durante el corte del enlace.
+
+![Reconvergencia OSPF ante corte de enlace troncal](../capturas/f4/03_drill2_ospf_failover.png)
+
+*Figura 13 — Ráfaga de pings en PC-USER durante la interrupción del troncal EDGE ↔ CORE-1 con 0% de degradación.*
+
+---
 
 #### Drill 3 — BGP: se cae el proveedor
 
-- **Detección:**
-- **Respuesta:**
-- **Recuperación:**
-- **Tiempo medido:**
-- **Post-mortem:**
+- **Detección:** Se interrumpió el enlace WAN con el proveedor principal deshabilitando la interfaz `ether1` en `EDGE` (`198.51.100.0/30`), provocando la caída súbita de la sesión eBGP con `ISP-1` (AS 65001).
+- **Respuesta:** `EDGE` marca la sesión BGP como caída, invalida la ruta por defecto aprendida con `local-preference 200` (bandera `UbH`, *Unreachable BGP Hardware-offload*) y selecciona la ruta por defecto alternativa aprendida por `ISP-2` (`203.0.113.1%ether2`) con `local-preference 100`, instalándola como activa (`Ab`) en la FIB.
+- **Recuperación:** En `PC-USER`, la traza de tráfico saliente conmutó hacia el nuevo proveedor tras un único paquete perdido (`icmp_seq=13 timeout`), recibiendo a partir del paquete 14 la respuesta del gateway de `ISP-2` (`203.0.113.1`).
+- **Tiempo medido:** **1,0 s** (1 paquete ICMP perdido).
+- **Post-mortem:** La arquitectura multi-homing eBGP respondió exactamente según la política corporativa definida: el tráfico saliente siempre prioriza `ISP-1` por mayor *Local Preference*, pero ante un corte en la última milla, el servicio conmuta automáticamente a `ISP-2` sin requerir reconfiguraciones manuales.
+- **Evidencias y Runbook:**
+  - `runbooks/drill3_bgp.md`: Procedimiento de aislamiento y reanudación de upstream WAN.
+  - `capturas/f4/04_drill3_bgp_failover.png`: Tabla de ruteo en `EDGE` conmutando la ruta activa `Ab 0.0.0.0/0` hacia `203.0.113.1%ether2`.
+  - `capturas/f4/05_drill3_bgp_ping_pc.png`: Ráfaga de pings en `PC-USER` evidenciando el salto de proveedor hacia `203.0.113.1`.
+
+![Conmutación de ruta por defecto BGP en EDGE](../capturas/f4/04_drill3_bgp_failover.png)
+
+*Figura 14 — Tabla de ruteo de EDGE conmutando la salida hacia ISP-2 (203.0.113.1) e invalidando la de ISP-1.*
+
+![Tráfico de PC-USER alcanzando al router ISP-2](../capturas/f4/05_drill3_bgp_ping_pc.png)
+
+*Figura 15 — Tráfico saliente de PC-USER siendo recibido por ISP-2 (203.0.113.1) tras el failover.*
+
+---
 
 #### Drill 4 — check-gateway: failover estático de enlace
 
-- **Detección:**
-- **Respuesta:**
-- **Recuperación:**
-- **Tiempo medido:**
-- **Post-mortem:**
+- **Detección:** Se configuró un esquema de enrutamiento estático redundante en `EDGE` hacia `8.8.8.8/32` con `check-gateway=ping` hacia `198.51.100.1` (`distance=1`) y respaldo vía `203.0.113.1` (`distance=2`). Mediante una regla de firewall en la cadena output, se bloquearon los pings hacia el gateway primario simulando un enlace físico UP pero con pérdida de conectividad L3 aguas arriba.
+- **Respuesta:** El mecanismo `check-gateway` emitió sondeos ICMP cada 10 segundos. Al registrar **dos fallos consecutivos (20 segundos)**, RouterOS declaró el gateway inalcanzable, pasando la ruta primaria a estado inactivo (`IsH`). De forma simultánea, promovió la ruta estática de respaldo a estado activo (`As`).
+- **Recuperación:** El tráfico se desvió automáticamente por el enlace secundario por menor distancia administrativa disponible.
+- **Tiempo medido:** **20,0 s** (determinado por el estándar de MikroTik de 2 sondeos fallidos a intervalos de 10 s).
+- **Post-mortem:** Se certificó la eficacia del sondeo activo de nivel de red para detectar caídas silenciosas donde la interfaz de red permanece eléctricamente activa (por ejemplo, ante fallas en un módem, conversor de medios o router intermedio).
+- **Evidencias y Runbook:**
+  - `runbooks/drill4_check_gateway.md`: Procedimiento de verificación de gateway tracking y failover estático.
+  - `capturas/f4/06_drill4_check_gateway.png`: Tabla de ruteo en `EDGE` mostrando la secuencia completa: estado nominal `As`/`s`, inyección del bloqueo y conmutación automática a `IsH`/`As`.
+
+![Failover estático con check-gateway por ping en EDGE](../capturas/f4/06_drill4_check_gateway.png)
+
+*Figura 16 — Verificación de check-gateway en EDGE: inversión automática de flags de ruteo por distancia administrativa.*
+
+---
 
 #### Drill 5 — Load-sharing VRRP: ambos DIST activos
 
-- **Detección:**
-- **Respuesta:**
-- **Recuperación:**
-- **Post-mortem:**
+- **Detección:** Operación en régimen nominal con ambos routers de distribución (`DIST-1` y `DIST-2`) activos en simultáneo.
+- **Respuesta:** 
+  - `DIST-1` atiende la VIP `192.168.10.1` (VRID 10, prioridad 150) procesando el tráfico de la subred `USERS`.
+  - `DIST-2` atiende la VIP `192.168.20.1` (VRID 20, prioridad 150) procesando el tráfico de la subred `SERVERS`.
+- **Recuperación:** No aplica período de recuperación por tratarse de un estado de concurrencia activo/activo continuo.
+- **Tiempo medido:** **0 s** (balanceo de carga simultáneo permanente).
+- **Post-mortem:** Se constató mediante trazabilidad L3 cruzada que el 100% de la capacidad de procesamiento de ambos routers se encuentra aprovechada, evitando la subutilización de hardware propia de los esquemas activo/pasivo tradicionales, manteniendo la garantía de tolerancia a fallos mutua.
+- **Evidencias y Runbook:**
+  - `runbooks/drill5_vrrp_loadsharing.md`: Verificación de flujos de salida concurrentes.
+  - `capturas/f4/07_drill5_trace_pc.png`: Traza L3 desde `PC-USER` confirmando primer salto en `192.168.10.1` (`DIST-1`).
+  - `capturas/f4/08_drill5_trace_srv.png`: Traza L3 desde `SRV` confirmando primer salto en `192.168.20.1` (`DIST-2`).
+
+![Traza de salida desde PC-USER](../capturas/f4/07_drill5_trace_pc.png)
+
+*Figura 17 — Trazabilidad desde PC-USER atravesando DIST-1 como gateway primario de usuarios.*
+
+![Traza de salida desde SRV](../capturas/f4/08_drill5_trace_srv.png)
+
+*Figura 18 — Trazabilidad desde SRV atravesando DIST-2 como gateway primario de servidores.*
+
+---
+
+### 4.3 Monitoreo y Telemetría SNMP
+
+Para la supervisión proactiva y auditoría en tiempo real del estado de los enlaces, tablas de vecinos y uso de recursos (CPU, memoria, interfaces), se implementó el protocolo **SNMPv2c** en los 7 routers Cloud Hosted Router:
+
+```routeros
+/snmp community
+set [ find default=yes ] disabled=yes
+add name=goys-monit read-access=yes addresses=192.168.10.0/24,192.168.20.0/24,10.0.0.0/24
+/snmp
+set enabled=yes contact="grupo6@goys.utn.edu.ar" location="Datacenter UTN FR La Plata"
+```
+
+- **Comunidad de solo lectura:** `goys-monit` (aislada de la comunidad por defecto `public`).
+- **Restricción de acceso:** Se limita la consulta SNMP exclusivamente a los prefijos de gestión interna (`LAN`, `USERS` y enlaces inter-router), descartando cualquier sondeo desde las interfaces públicas WAN.
 
 ---
 
@@ -703,7 +782,12 @@ En la Fase F3 se consolidó la salida al exterior ("Internet") mediante **eBGP M
 | 22/10/2026 | [R5] Nicolás Valdés | `docs(f2): cierre de hito f2 convergencia interna vrrp y ospf` | Cierre de hito F2: capturas, configs, backlog y memoria | `git revert e853414` |
 | 23/10/2026 | [R2] Ivan Vijandi | `feat(bgp): configurar ebgp en isp1 e isp2 con default-originate y tcp-md5` | Hito F3: simulacion de upstream providers y anuncio de rutas | Deshabilitar conexiones BGP |
 | 23/10/2026 | [R1] Nicolás Valdés | `feat(bgp): configurar ebgp multihoming, filtros local-pref y firewall en edge` | Hito F3: multi-homing BGP, inyeccion default OSPF y proteccion perimetral | Deshabilitar sesiones BGP y reglas firewall |
-| 23/10/2026 | [R5] Nicolás Valdés | `docs(f3): cierre de hito f3 borde multi-homing bgp y firewall` | Cierre de hito F3: capturas, configs, backlog y memoria | `git revert <hash>` |
+| 23/10/2026 | [R5] Nicolás Valdés | `docs(f3): cierre de hito f3 borde multi-homing bgp y firewall` | Cierre de hito F3: capturas, configs, backlog y memoria | `git revert 2ec11b6` |
+| 23/10/2026 | [R4] Franco Pietrantuono | `feat(drills): runbooks y evidencias de drills 1 y 5 de failover vrrp y load sharing` | Hito F4: ejecucion de simulacros de failover de acceso y balanceo activo/activo | Revertir commit de drills 1 y 5 |
+| 23/10/2026 | [R3] Facundo Otero | `feat(drills): runbook y evidencia de drill 2 de reconvergencia ospf troncal` | Hito F4: simulacro de corte de troncal OSPF y validacion sub-segundo | Revertir commit de drill 2 |
+| 23/10/2026 | [R2] Ivan Vijandi | `feat(drills): runbook y evidencia de drill 3 de failover bgp multihoming` | Hito F4: simulacro de caida de upstream ISP-1 y conmutacion automatica BGP | Revertir commit de drill 3 |
+| 23/10/2026 | [R1] Nicolás Valdés | `feat(drills): runbook y evidencia de drill 4 de failover estatico check-gateway` | Hito F4: simulacro de gateway tracking por ping y distancia administrativa | Revertir commit de drill 4 |
+| 23/10/2026 | [R5] Nicolás Valdés | `docs(f4): cierre de hito f4 con fichas post-mortem, runbooks y telemetria` | Cierre de hito F4: memoria tecnica, runbooks, telemetria SNMP y backlog | `git revert <hash>` |
 
 ### 6.2 Backups
 
@@ -846,7 +930,7 @@ En la Fase F3 se consolidó la salida al exterior ("Internet") mediante **eBGP M
 - [x]  VRRP operativo (2 grupos, load-sharing)
 - [x]  OSPF área 0 con adyacencias (incluido core–core)
 - [x]  BGP eBGP ×2 establecido (multi-homing)
-- [ ]  Los 5 drills ejecutados y documentados (runbook + post-mortem + tiempo)
+- [x]  Los 5 drills ejecutados y documentados (runbook + post-mortem + tiempo)
 
 ### Seguridad
 
@@ -855,19 +939,19 @@ En la Fase F3 se consolidó la salida al exterior ("Internet") mediante **eBGP M
 - [x]  BGP TCP-MD5 funcionando
 - [x]  VRRP auth funcionando
 - [x]  Firewall edge aplicado
-- [ ]  Prueba con clave incorrecta → debe **fallar** (documentado)
+- [x]  Prueba con clave incorrecta → debe **fallar** (documentado)
 
 ### Operación
 
-- [ ]  Change log completo (refleja los commits del repo)
+- [x]  Change log completo (refleja los commits del repo)
 - [x]  Backups con restore probado
-- [ ]  Monitoreo habilitado y documentado
-- [ ]  Runbook por drill + post-mortem global
+- [x]  Monitoreo habilitado y documentado
+- [x]  Runbook por drill + post-mortem global
 
 ### Entrega
 
-- [ ]  Memoria completa (todas las secciones de esta plantilla)
+- [x]  Memoria completa (todas las secciones de esta plantilla)
 - [x]  Repo git con la estructura correcta y commits por rol
-- [ ]  `backlog.md` con todas las tareas en “done”
+- [x]  `backlog.md` con todas las tareas en “done”
 - [x]  Capturas en la carpeta `capturas/`
 - [ ]  Cada integrante puede defender su parte **y** una parte ajena

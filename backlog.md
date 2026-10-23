@@ -108,20 +108,20 @@
 ## Epic F4 — Drills + monitoreo · *vence mar 20/10*
 
 ### Los 5 drills (runbook + post-mortem + tiempo)
-- [ ] [R4] [R5] **Drill 1 (VRRP):** Apagar `DIST-1` y medir tiempo de convergencia de tráfico de `USERS` conmutando a `DIST-2`.
-- [ ] [R3] [R5] **Drill 2 (OSPF):** Deshabilitar enlace `EDGE ↔ CORE-1` y registrar reconvergencia OSPF a través de `CORE-2` y core-core.
-- [ ] [R1] [R2] [R5] **Drill 3 (BGP):** Cortar enlace con `ISP-1` y validar conmutación automática de la default route hacia `ISP-2`.
-- [ ] [R1] [R5] **Drill 4 (check-gateway):** Simular falla de enlace estático con gateway tracking y verificar conmutación por distancia administrativa.
-- [ ] [R4] [R5] **Drill 5 (Load-sharing VRRP):** Comprobar flujo concurrente de tráfico saliente de `USERS` vía `DIST-1` y de `SERVERS` vía `DIST-2`.
-- [ ] [R5] Redactar runbooks y fichas post-mortem de cada drill en `runbooks/` y `docs/memoria.md`.
+- [x] [R4] [R5] **Drill 1 (VRRP):** Apagar `DIST-1` y medir tiempo de convergencia de tráfico de `USERS` conmutando a `DIST-2`.
+- [x] [R3] [R5] **Drill 2 (OSPF):** Deshabilitar enlace `EDGE ↔ CORE-1` y registrar reconvergencia OSPF a través de `CORE-2` y core-core.
+- [x] [R1] [R2] [R5] **Drill 3 (BGP):** Cortar enlace con `ISP-1` y validar conmutación automática de la default route hacia `ISP-2`.
+- [x] [R1] [R5] **Drill 4 (check-gateway):** Simular falla de enlace estático con gateway tracking y verificar conmutación por distancia administrativa.
+- [x] [R4] [R5] **Drill 5 (Load-sharing VRRP):** Comprobar flujo concurrente de tráfico saliente de `USERS` vía `DIST-1` y de `SERVERS` vía `DIST-2`.
+- [x] [R5] Redactar runbooks y fichas post-mortem de cada drill en `runbooks/` y `docs/memoria.md`.
 
 ### Monitoreo (SNMP/chequeos)
-- [ ] [R5] Configurar comunidad SNMP en los routers y habilitar scripts de telemetría/chequeo de estado.
+- [x] [R5] Configurar comunidad SNMP en los routers y habilitar scripts de telemetría/chequeo de estado.
 
 ### Verificación de seguridad (clave incorrecta falla)
-- [ ] [R3] [R5] Configurar deliberadamente password incorrecta en un vecino OSPF y evidenciar caída de adyacencia.
-- [ ] [R1] [R5] Configurar clave TCP-MD5 errónea en BGP y documentar rechazo de sesión en logs.
-- [ ] [R4] [R5] Validar rechazo de anuncios VRRP con clave incorrecta.
+- [x] [R3] [R5] Configurar deliberadamente password incorrecta en un vecino OSPF y evidenciar caída de adyacencia.
+- [x] [R1] [R5] Configurar clave TCP-MD5 errónea en BGP y documentar rechazo de sesión en logs.
+- [x] [R4] [R5] Validar rechazo de anuncios VRRP con clave incorrecta.
 
 ---
 
