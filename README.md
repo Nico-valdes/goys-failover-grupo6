@@ -4,7 +4,7 @@
 **Cátedra:** Gestión Operativa y Seguridad en Redes (GOYS)  
 **Institución:** Universidad Tecnológica Nacional — Facultad Regional La Plata (UTN FR La Plata)  
 **Ciclo Lectivo:** 2026  
-**Estado del Proyecto:** `Fase F4 — Completada` 
+**Estado del Proyecto:** `Fase F5 — Laboratorio finalizado`
 
 ---
 

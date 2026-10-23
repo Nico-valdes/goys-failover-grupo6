@@ -662,7 +662,7 @@ En la Fase F3 se consolidó la salida al exterior ("Internet") mediante **eBGP M
 
 - **Detección:** Se interrumpió el enlace WAN con el proveedor principal deshabilitando la interfaz `ether1` en `EDGE` (`198.51.100.0/30`), provocando la caída súbita de la sesión eBGP con `ISP-1` (AS 65001).
 - **Respuesta:** `EDGE` marca la sesión BGP como caída, invalida la ruta por defecto aprendida con `local-preference 200` (bandera `UbH`, *Unreachable BGP Hardware-offload*) y selecciona la ruta por defecto alternativa aprendida por `ISP-2` (`203.0.113.1%ether2`) con `local-preference 100`, instalándola como activa (`Ab`) en la FIB.
-- **Recuperación:** En `PC-USER`, la traza de tráfico saliente conmutó hacia el nuevo proveedor tras un único paquete perdido (`icmp_seq=13 timeout`), recibiendo a partir del paquete 14 la respuesta del gateway de `ISP-2` (`203.0.113.1`).
+- **Recuperación:** En `PC-USER`, el tráfico saliente conmutó hacia el nuevo proveedor tras un único paquete perdido (`icmp_seq=13 timeout`). A partir del paquete 14, las respuestas provienen de `ISP-2` (`203.0.113.1`) como mensajes ICMP *Destination network unreachable*: esto evidencia que la salida ya se realiza por `ISP-2`, mientras que `1.1.1.1` deja de ser alcanzable porque es la loopback del proveedor caído (`ISP-1`) y no existe interconexión entre ambos ISPs en la topología.
 - **Tiempo medido:** **1,0 s** (1 paquete ICMP perdido).
 - **Post-mortem:** La arquitectura multi-homing eBGP respondió exactamente según la política corporativa definida: el tráfico saliente siempre prioriza `ISP-1` por mayor *Local Preference*, pero ante un corte en la última milla, el servicio conmuta automáticamente a `ISP-2` sin requerir reconfiguraciones manuales.
 - **Evidencias y Runbook:**
@@ -788,7 +788,7 @@ set enabled=yes contact="grupo6@goys.utn.edu.ar" location="Datacenter UTN FR La 
 | 23/10/2026 | [R2] Ivan Vijandi | `feat(drills): runbook y evidencia de drill 3 de failover bgp multihoming` | Hito F4: simulacro de caida de upstream ISP-1 y conmutacion automatica BGP | Revertir commit de drill 3 |
 | 23/10/2026 | [R1] Nicolás Valdés | `feat(drills): runbook y evidencia de drill 4 de failover estatico check-gateway` | Hito F4: simulacro de gateway tracking por ping y distancia administrativa | Revertir commit de drill 4 |
 | 23/10/2026 | [R5] Nicolás Valdés | `docs(f4): cierre de hito f4 con fichas post-mortem, runbooks y telemetria` | Cierre de hito F4: memoria tecnica, runbooks, telemetria SNMP y backlog | `git revert <hash>` |
-
+| 23/10/2026 | [R5] Facundo Otero | `docs(f5): cierre de hito f5 con memoria, backlog y readme finales` | Cierre de hito F5: backlog cerrado, estado final del proyecto y ajuste de evidencia del drill 3 | `git revert <hash>` |
 ### 6.2 Backups
 
 **Backup inicial (cierre de F1):** en cada uno de los 7 routers se ejecutó `/export verbose=no file=<nodo>` (script `.rsc`, auditable con `git diff`) y `/system backup save name=<NODO>_f1` (imagen binaria `.backup`).
@@ -954,4 +954,4 @@ set enabled=yes contact="grupo6@goys.utn.edu.ar" location="Datacenter UTN FR La 
 - [x]  Repo git con la estructura correcta y commits por rol
 - [x]  `backlog.md` con todas las tareas en “done”
 - [x]  Capturas en la carpeta `capturas/`
-- [ ]  Cada integrante puede defender su parte **y** una parte ajena
+- [x]  Cada integrante puede defender su parte **y** una parte ajena

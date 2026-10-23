@@ -128,10 +128,10 @@
 ## Epic F5 — Memoria + defensa · *vence vie 23/10*
 
 ### Memoria (plantilla completa)
-- [ ] [R1] [R2] [R3] [R4] [R5] Consolidar configuraciones finales, evidencias, tablas de enrutamiento y conclusiones en `docs/memoria.md`.
+- [x] [R1] [R2] [R3] [R4] [R5] Consolidar configuraciones finales, evidencias, tablas de enrutamiento y conclusiones en `docs/memoria.md`.
 
 ### Backlog cerrado (todo en "hecho")
-- [ ] [R5] Auditar cumplimiento de criterios de aceptación de cada tarea y pasar estado a `[x]`.
+- [x] [R5] Auditar cumplimiento de criterios de aceptación de cada tarea y pasar estado a `[x]`.
 
 ### Defensa oral (parte propia + ajena)
-- [ ] [R1] [R2] [R3] [R4] [R5] Realizar simulacro de defensa grupal garantizando que cada miembro domine tanto su capa como las capas adyacentes.
+- [x] [R1] [R2] [R3] [R4] [R5] Realizar simulacro de defensa grupal garantizando que cada miembro domine tanto su capa como las capas adyacentes.
